@@ -13,8 +13,15 @@ import java.util.List;
 
 @Component
 public class CardService {
+
+    private Session session;
+
+    public CardService() {
+        session = null;
+    }
+
     public String createCard(Card card){
-        Session session = HibernateUtil.getFactory().openSession();
+        this.session = HibernateUtil.getFactory().openSession();
         session.beginTransaction();
         card.setStatus(true);
         card.setAmount(5000.0);
@@ -25,14 +32,14 @@ public class CardService {
         return "Card created!";
     }
     public Card getCard(Integer id){
-        Session session = HibernateUtil.getFactory().openSession();
+        this.session = HibernateUtil.getFactory().openSession();
         Card card = session.get(Card.class, id);
         if(card==null) throw new BadRequest("Card not found!");
         return card;
     }
     public String updateCard(Card card, Integer id){
         Card oldCard = getCard(id);
-        Session session = HibernateUtil.getFactory().openSession();
+        this.session = HibernateUtil.getFactory().openSession();
         session.beginTransaction();
         oldCard.setName(card.getName());
         oldCard.setNumber(card.getNumber());
@@ -43,7 +50,7 @@ public class CardService {
     }
     public String deleteCard(Integer id) {
         Card card = getCard(id);
-        Session session = HibernateUtil.getFactory().openSession();
+        this.session = HibernateUtil.getFactory().openSession();
         session.delete(card);
         session.getTransaction().commit();
         session.close();
@@ -51,7 +58,7 @@ public class CardService {
     }
 
     public Card getCardByNumber(String number){
-        Session session = HibernateUtil.getFactory().openSession();
+        this.session = HibernateUtil.getFactory().openSession();
         session.beginTransaction();
         Query query =  session.createQuery("FROM Card where number=:number");
         query.setParameter("number", number);
@@ -62,7 +69,7 @@ public class CardService {
 
     public String addCash(Integer cardId, Double cash){
         Card card = getCard(cardId);
-        Session session = HibernateUtil.getFactory().openSession();
+        this.session = HibernateUtil.getFactory().openSession();
         session.beginTransaction();
         card.setAmount(card.getAmount()+cash);
         session.update(card);
@@ -73,7 +80,7 @@ public class CardService {
 
     public List<Card> getCardList(){
         List<Card> cardList;
-        Session session = HibernateUtil.getFactory().openSession();
+        this.session = HibernateUtil.getFactory().openSession();
         session.beginTransaction();
         Query query = session.createQuery("from Card");
         cardList = query.getResultList();
